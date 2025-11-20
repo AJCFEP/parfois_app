@@ -264,5 +264,4 @@ else:
         st.markdown("#### Details of similar products")
         st.dataframe(pd.DataFrame(rows_info))
 
-        if __name__ == "__main__":
-    run_app()
+ 
