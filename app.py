@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 
-def run_app():
+# def run_app():
     # put ALL your Streamlit code here
     # including loading data, building UI, etc.
 
