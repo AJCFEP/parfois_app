@@ -202,7 +202,6 @@ st.markdown(
     - **Student 2** – *Name to be inserted*
     - **Student 3** – *Name to be inserted*
     - **Student 4** – *Name to be inserted*
-
     > 
     """
 )
@@ -220,7 +219,5 @@ st.markdown(
     - Pedregosa, F. et al. (2011). *Scikit-learn: Machine Learning in
       Python.* Journal of Machine Learning Research.
 
-    > *(You can add here any additional academic articles, textbooks, or
-    online resources that were consulted during the project.)*
     """
 )
