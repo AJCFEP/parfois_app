@@ -2,6 +2,43 @@ import streamlit as st
 
 st.title("About this Project")
 
+
+# -------------------------------------------------
+# Global style – compact spacing
+# -------------------------------------------------
+st.markdown(
+    """
+    <style>
+        /* Less padding at the very top of the page */
+        .block-container {
+            padding-top: 2rem;
+        }
+
+        /* Reduce extra space below images */
+        .stApp [data-testid="stImage"] img {
+            margin-bottom: 0.1rem;
+        }
+
+        /* Compact headings */
+        h1, h2, h3 {
+            margin-top: 0.2rem !important;
+            margin-bottom: 0.2rem !important;
+        }
+
+        /* Compact horizontal rules */
+        hr {
+            margin-top: 0.2rem !important;
+            margin-bottom: 0.2rem !important;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# -------------------------------------------------
+
+
+
 # -------------------- Context --------------------
 st.markdown(
     """
