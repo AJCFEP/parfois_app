@@ -207,22 +207,6 @@ st.markdown(
     """
 )
 
-# -------------------- Pipeline Diagram (Image) --------------------
-st.markdown(
-    """
-    ### Project Pipeline Overview
-    The following diagram summarises the end-to-end workflow, from raw
-    data to the deployed online application.
-    """
-)
-
-# NOTE: `workflow.png` should be in the root folder of the Streamlit app (same level as app.py).
-st.image(
-    "workflow.png",
-    caption="High-level workflow of the Fashion Product Similarity project",
-    use_column_width=True,
-)
-
 # -------------------- References --------------------
 st.markdown(
     """
