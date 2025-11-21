@@ -6,17 +6,23 @@ import os
 def show_header():
     st.markdown(
         """
-        <div style='display:flex; align-items:center; justify-content:flex-start; padding: 10px 0px 25px 0px;'>
-            <img src='https://upload.wikimedia.org/wikipedia/commons/2/2a/parfois.png' 
-                 style='height:55px; margin-right:25px;' />
-            <h1 style='font-size:32px; font-weight:400; margin:0;'>
-                Similarity Detection for Fashion Retail Products
-            </h1>
-        </div>
+        <div style='padding: 10px 0px 20px 0px;'>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.image("parfois.png", width=170)  # ← your logo
+
+    st.markdown(
+        """
+        <h1 style='font-size:30px; font-weight:400; margin-top: -10px;'>
+            Similarity Detection for Fashion Retail Products
+        </h1>
         <hr>
         """,
         unsafe_allow_html=True,
     )
+
 
 show_header()
 
