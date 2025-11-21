@@ -1,0 +1,4 @@
+column,dtype,non_null,nulls,n_unique
+PROD_CLR_EQUIV,object,10185,0,10185
+SALES_QTY,float64,10185,0,5532
+SALES_AMT_FX_RATE,float64,10185,0,10157
