@@ -5,26 +5,32 @@ from pathlib import Path
 
 # ---------------- HEADER ---------------- #
 def show_header():
+    # Global style: reduce top padding so the header sits higher
     st.markdown(
         """
-        <div style='padding: 10px 0px 20px 0px;'>
+        <style>
+            .block-container {
+                padding-top: 0.5rem;
+            }
+        </style>
         """,
         unsafe_allow_html=True,
     )
 
-    st.image("parfois.png", width=500)  # ← your logo
-
+    # Header: logo + title on the same row, aligned to the top
     st.markdown(
         """
-        <h1 style='font-size:30px; font-weight:400; margin-top: -10px;'>
-            Similarity Detection for Fashion Retail Products
-        </h1>
-        <hr>
+        <div style='display:flex; align-items:center; justify-content:flex-start; margin-bottom: 0.8rem;'>
+            <img src='parfois.png'
+                 style='height:55px; margin-right:25px;' />
+            <h1 style='font-size:32px; font-weight:400; margin:0;'>
+                Similarity Detection for Fashion Retail Products
+            </h1>
+        </div>
+        <hr style='margin-top:0.4rem; margin-bottom:1.2rem;'>
         """,
         unsafe_allow_html=True,
     )
-
-
 show_header()
 
 # ---------------- PAGE CONTENT ---------------- #
