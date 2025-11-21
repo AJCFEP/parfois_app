@@ -10,7 +10,7 @@ def show_header():
         """
         <style>
             .block-container {
-                padding-top: 0.5rem;
+                padding-top: 2rem;
             }
         </style>
         """,
