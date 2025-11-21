@@ -4,13 +4,15 @@ from pathlib import Path
 
 
 # ---------------- HEADER ---------------- #
+import streamlit as st
+
 def show_header():
     # Global style: reduce top padding so the header sits higher
     st.markdown(
         """
         <style>
             .block-container {
-                padding-top: 1.5rem;
+                padding-top: 0.5rem;
             }
         </style>
         """,
@@ -31,6 +33,7 @@ def show_header():
         """,
         unsafe_allow_html=True,
     )
+
 show_header()
 
 # ---------------- PAGE CONTENT ---------------- #
