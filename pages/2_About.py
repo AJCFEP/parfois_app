@@ -3,46 +3,6 @@ import os
 
 st.title("About this Project")
 
-# -------------------------------------------------
-# Paths
-# -------------------------------------------------
-BASE_DIR   = os.path.dirname(__file__)
-DATA_DIR   = os.path.join(BASE_DIR, "data")
-IMAGES_DIR = os.path.join(BASE_DIR, "images")
-LOGO_PATH  = os.path.join(BASE_DIR, "parfois.png")
-
-# -------------------------------------------------
-# Header: logo (left) + subtitle (right)
-# -------------------------------------------------
-col_logo, col_title = st.columns([2, 3])  # tune ratio if you like
-
-with col_logo:
-    # Fill the column; the column width controls the visible size
-    st.image(LOGO_PATH, use_container_width=True)
-
-with col_title:
-    # Subtitle aligned roughly vertically with the logo
-    st.markdown(
-        """
-        <div style="
-            font-family:Arial;
-            font-size:26px;
-            color:#555;
-            margin-top:2.2rem;   /* adjust up/down to align with logo */
-            margin-bottom:0.2rem;
-        ">
-            Similarity Detection for Fashion Retail Products
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-st.markdown("<hr>", unsafe_allow_html=True)
-
-# -------------------------------------------------
-
-
-
 # -------------------- Context --------------------
 st.markdown(
     """
