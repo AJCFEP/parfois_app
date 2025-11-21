@@ -4,36 +4,32 @@ st.title("About this Project")
 
 
 # -------------------------------------------------
-# Global style – compact spacing
+# Header: logo (left) + subtitle (right)
 # -------------------------------------------------
-st.markdown(
-    """
-    <style>
-        /* Less padding at the very top of the page */
-        .block-container {
-            padding-top: 2rem;
-        }
+col_logo, col_title = st.columns([2, 3])  # tune ratio if you like
 
-        /* Reduce extra space below images */
-        .stApp [data-testid="stImage"] img {
-            margin-bottom: 0.1rem;
-        }
+with col_logo:
+    # Fill the column; the column width controls the visible size
+    st.image(LOGO_PATH, use_container_width=True)
 
-        /* Compact headings */
-        h1, h2, h3 {
-            margin-top: 0.2rem !important;
-            margin-bottom: 0.2rem !important;
-        }
+with col_title:
+    # Subtitle aligned roughly vertically with the logo
+    st.markdown(
+        """
+        <div style="
+            font-family:Arial;
+            font-size:26px;
+            color:#555;
+            margin-top:2.2rem;   /* adjust up/down to align with logo */
+            margin-bottom:0.2rem;
+        ">
+            Similarity Detection for Fashion Retail Products
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-        /* Compact horizontal rules */
-        hr {
-            margin-top: 0.2rem !important;
-            margin-bottom: 0.2rem !important;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+st.markdown("<hr>", unsafe_allow_html=True)
 
 # -------------------------------------------------
 
