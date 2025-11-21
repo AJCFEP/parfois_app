@@ -123,7 +123,7 @@ st.markdown("### Project Pipeline Overview")
 st.image(
     os.path.join(BASE_DIR, "workflow.png"),
     caption="High-level workflow of the Fashion Product Similarity project",
-    width=600,
+    width=200,
 )
 
 # -------------------- Web Application --------------------
