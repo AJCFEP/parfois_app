@@ -1,83 +1,110 @@
 import streamlit as st
 import pandas as pd
-from pathlib import Path
+import os
 
+# -------------------------------------------------
+# Paths (go one level up from /pages to project root)
+# -------------------------------------------------
+BASE_DIR   = os.path.dirname(os.path.dirname(__file__))
+DATA_DIR   = os.path.join(BASE_DIR, "data")
+LOGO_PATH  = os.path.join(BASE_DIR, "parfois.png")
 
-# ---------------- HEADER ---------------- #
-import streamlit as st
+PRODUCTS_CSV = os.path.join(DATA_DIR, "df_product.csv")
+SALES_CSV    = os.path.join(DATA_DIR, "df_sales.csv")
+REC_CSV      = os.path.join(DATA_DIR, "fashion_similarity_recommendations.csv")
 
-def show_header():
-    # Global style: reduce top padding so the header sits higher
+# -------------------------------------------------
+# Global style – SAME as app.py
+# -------------------------------------------------
+st.markdown(
+    """
+    <style>
+        .block-container {
+            padding-top: 2rem;
+        }
+        .stApp [data-testid="stImage"] img {
+            margin-bottom: 0.1rem;
+        }
+        h1, h2, h3 {
+            margin-top: 0.2rem !important;
+            margin-bottom: 0.2rem !important;
+        }
+        hr {
+            margin-top: 0.2rem !important;
+            margin-bottom: 0.2rem !important;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# -------------------------------------------------
+# Data loaders (reusing same CSVs as main app)
+# -------------------------------------------------
+@st.cache_data
+def load_data():
+    df_products = pd.read_csv(PRODUCTS_CSV, low_memory=False)
+    df_sales    = pd.read_csv(SALES_CSV, low_memory=False)
+    rec_df      = pd.read_csv(REC_CSV)
+    return df_products, df_sales, rec_df
+
+df_products, df_sales, rec_df = load_data()
+
+# -------------------------------------------------
+# Header: EXACTLY like app.py
+# -------------------------------------------------
+col_logo, col_title = st.columns([2, 3])
+
+with col_logo:
+    st.image(LOGO_PATH, use_container_width=True)
+
+with col_title:
     st.markdown(
         """
-        <style>
-            .block-container {
-                padding-top: 0.5rem;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # Header: logo + title on the same row, aligned to the top
-    st.markdown(
-        """
-        <div style='display:flex; align-items:center; justify-content:flex-start; margin-bottom: 0.8rem;'>
-            <img src='parfois.png'
-                 style='height:55px; margin-right:25px;' />
-            <h1 style='font-size:32px; font-weight:400; margin:0;'>
-                Similarity Detection for Fashion Retail Products
-            </h1>
+        <div style="
+            font-family:Arial;
+            font-size:26px;
+            color:#555;
+            margin-top:2.2rem;
+            margin-bottom:0.2rem;
+        ">
+            Similarity Detection for Fashion Retail Products
         </div>
-        <hr style='margin-top:0.4rem; margin-bottom:1.2rem;'>
         """,
         unsafe_allow_html=True,
     )
 
-show_header()
+st.markdown("<hr>", unsafe_allow_html=True)
 
-# ---------------- PAGE CONTENT ---------------- #
-
-st.title("Exploratory Data Analysis")
+# -------------------------------------------------
+# Page title + EDA content
+# -------------------------------------------------
+st.markdown(
+    """
+    <div style="font-size:32px; font-weight:600;
+                margin-top:4px; margin-bottom:4px;">
+        Exploratory Data Analysis
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 st.write(
     """
-    This page lets you explore the dataset used in the similarity search.
-    You can inspect columns, basic statistics, and distributions.
+    This page provides an overview of the dataset used in the similarity
+    engine. You can inspect basic information and simple distributions.
     """
 )
 
-# 🔧 TODO: change this to the real path of your CSV
-DATA_PATH = Path("data/parfois_embeddings.csv")  # example path
+st.subheader("Sample of the products table")
+st.dataframe(df_products.head())
 
-@st.cache_data
-def load_data():
-    try:
-        df = pd.read_csv(DATA_PATH)
-        return df
-    except Exception as e:
-        st.error(f"Could not load data from `{DATA_PATH}`. Error: {e}")
-        return None
+st.subheader("Column types")
+st.write(df_products.dtypes)
 
-df = load_data()
+st.subheader("Numeric summary")
+st.write(df_products.describe())
 
-if df is not None:
-    st.subheader("Sample of the data")
-    st.dataframe(df.head())
-
-    st.subheader("Basic information")
-    st.write(f"Number of rows: **{len(df)}**")
-    st.write(f"Number of columns: **{df.shape[1]}**")
-
-    st.subheader("Column types")
-    st.write(df.dtypes)
-
-    st.subheader("Numeric summary")
-    st.write(df.describe())
-
-    # Example: pick a column to inspect
-    st.subheader("Column distribution")
-    col = st.selectbox("Choose a column", df.columns)
-    st.write(df[col].value_counts().head(20))
-else:
-    st.info("Fix the CSV path in `DATA_PATH` to see the EDA.")
+st.subheader("Column distribution")
+col = st.selectbox("Choose a column to inspect", df_products.columns)
+st.write(df_products[col].value_counts().head(30))
