@@ -2,6 +2,13 @@ import streamlit as st
 
 st.title("About this Project")
 
+# -------------------------------------------------
+# Paths
+# -------------------------------------------------
+BASE_DIR   = os.path.dirname(__file__)
+DATA_DIR   = os.path.join(BASE_DIR, "data")
+IMAGES_DIR = os.path.join(BASE_DIR, "images")
+LOGO_PATH  = os.path.join(BASE_DIR, "parfois.png")
 
 # -------------------------------------------------
 # Header: logo (left) + subtitle (right)
