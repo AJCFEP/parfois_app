@@ -2,7 +2,7 @@ import streamlit as st
 import os
 
 
-
+# ---------------- HEADER ---------------- #
 def show_header():
     st.markdown(
         """
@@ -18,7 +18,9 @@ def show_header():
         unsafe_allow_html=True,
     )
 
+show_header()
 
+# ---------------- PAGE CONTENT ---------------- #
 
 
 st.title("About this Project")

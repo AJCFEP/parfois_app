@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 
 
-
+# ---------------- HEADER ---------------- #
 def show_header():
     st.markdown(
         """
@@ -19,9 +19,9 @@ def show_header():
         unsafe_allow_html=True,
     )
 
+show_header()
 
-
-
+# ---------------- PAGE CONTENT ---------------- #
 
 st.title("Exploratory Data Analysis")
 
