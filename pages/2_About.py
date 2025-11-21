@@ -7,7 +7,7 @@ def show_header():
     st.markdown(
         """
         <div style='display:flex; align-items:center; justify-content:flex-start; padding: 10px 0px 25px 0px;'>
-            <img src='https://upload.wikimedia.org/wikipedia/commons/2/2a/Parfois_logo.png' 
+            <img src='https://upload.wikimedia.org/wikipedia/commons/2/2a/parfois.png' 
                  style='height:55px; margin-right:25px;' />
             <h1 style='font-size:32px; font-weight:400; margin:0;'>
                 Similarity Detection for Fashion Retail Products
