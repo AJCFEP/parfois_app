@@ -12,7 +12,7 @@ def show_header():
         unsafe_allow_html=True,
     )
 
-    st.image("parfois.png", width=170)  # ← your logo
+    st.image("parfois.png", width=500)  # ← your logo
 
     st.markdown(
         """
