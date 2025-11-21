@@ -138,8 +138,7 @@ st.markdown(
     - **Student 3** – *Name to be inserted*
     - **Student 4** – *Name to be inserted*
 
-    > *(Edit this section to include the full list of team members and
-    their student numbers if required.)*
+    > *(full team members list.)*
     """
 )
 
@@ -156,7 +155,7 @@ st.markdown(
 st.image(
     "workflow.png",
     caption="High-level workflow of the Fashion Product Similarity project",
-    use_column_width=True,
+    width=300 #use_column_width=True,
 )
 
 # -------------------- References --------------------
