@@ -1,6 +1,26 @@
 import streamlit as st
 import os
 
+
+
+def show_header():
+    st.markdown(
+        """
+        <div style='display:flex; align-items:center; justify-content:flex-start; padding: 10px 0px 25px 0px;'>
+            <img src='https://upload.wikimedia.org/wikipedia/commons/2/2a/Parfois_logo.png' 
+                 style='height:55px; margin-right:25px;' />
+            <h1 style='font-size:32px; font-weight:400; margin:0;'>
+                Similarity Detection for Fashion Retail Products
+            </h1>
+        </div>
+        <hr>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+
+
 st.title("About this Project")
 
 # -------------------- Context --------------------
