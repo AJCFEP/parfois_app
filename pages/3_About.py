@@ -202,26 +202,11 @@ st.markdown(
     - **Student 2** – *Name to be inserted*
     - **Student 3** – *Name to be inserted*
     - **Student 4** – *Name to be inserted*
-    > 
     """
 )
 
-# -------------------- References --------------------
-st.markdown(
-    """
-    ### References
+# -------------------- References with phase selector --------------------
 
-    Below are some key libraries and concepts that supported this work:
-
-    - Reimers, N., & Gurevych, I. (2019). *Sentence-BERT: Sentence
-      Embeddings using Siamese BERT-Networks.*
-    - Streamlit Inc. (2024). Streamlit documentation. Retrieved from https://docs.streamlit.io/
-    - Pedregosa, F. et al. (2011). *Scikit-learn: Machine Learning in
-      Python.* Journal of Machine Learning Research.
-
-      
-
-      import streamlit as st
 
 def show_references_by_phase():
     phases = [
@@ -282,7 +267,7 @@ def show_references_by_phase():
 """
     }
 
-    st.subheader("References by project phase")
+    st.markdown("### References by Project Phase")
 
     selected_phase = st.selectbox(
         "Select a phase of the pipeline:",
@@ -293,17 +278,5 @@ def show_references_by_phase():
     st.markdown(refs_by_phase[selected_phase])
 
 
-# Call this where you want the references section to appear in your page:
-# show_references_by_phase()
-
-
-
-
-
-
-
-
-
-
-    """
-)
+# Call the references section
+show_references_by_phase()

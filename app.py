@@ -6,6 +6,8 @@ import os
     # put ALL your Streamlit code here
     # including loading data, building UI, etc.
 
+st.markdown("# Similarity Explorer")
+
 
 # -------------------------------------------------
 # Page config
