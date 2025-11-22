@@ -234,10 +234,16 @@ else:
 #    st.write("Basic statistics of similarity scores (hybrid model):")
 #    st.dataframe(stats_df)
 
+#if stats_df is not None:
+#    st.write("Basic statistics of similarity scores (hybrid model):")
+#    st.table(stats_df)   # fixed size, clean, compact
+
 if stats_df is not None:
     st.write("Basic statistics of similarity scores (hybrid model):")
-    st.table(stats_df)   # fixed size, clean, compact
-    width=500,
+    
+    col = st.container()
+    with col:
+        st.dataframe(stats_df, use_container_width=False)   # prevent auto-resize
 
 
 else:
