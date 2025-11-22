@@ -220,34 +220,30 @@ st.markdown(
     """
 )
 
-hist_path = os.path.join(SIM_DIR, "similarity_score_hist.png")
-if os.path.exists(hist_path):
-    st.image(
-        hist_path,
-        caption="Distribution of similarity scores (hybrid model)",
-        width=500,
-    )
-else:
-    st.info("similarity_score_hist.png not found in similarity_pipeline folder.")
+# -------------------------------------------------
+# Histogram + Stats side by side
+# -------------------------------------------------
 
-#if stats_df is not None:
-#    st.write("Basic statistics of similarity scores (hybrid model):")
-#    st.dataframe(stats_df)
+col_hist, col_stats = st.columns([2, 1])   # wider chart, narrower table
 
-#if stats_df is not None:
-#    st.write("Basic statistics of similarity scores (hybrid model):")
-#    st.table(stats_df)   # fixed size, clean, compact
+with col_hist:
+    hist_path = os.path.join(SIM_DIR, "similarity_score_hist.png")
+    if os.path.exists(hist_path):
+        st.image(
+            hist_path,
+            caption="Distribution of similarity scores (hybrid model)",
+            use_container_width=True
+        )
+    else:
+        st.info("similarity_score_hist.png not found in similarity_pipeline folder.")
 
-if stats_df is not None:
-    st.write("Basic statistics of similarity scores (hybrid model):")
-    
-    col = st.container()
-    with col:
-        st.dataframe(stats_df, use_container_width=False)   # prevent auto-resize
+with col_stats:
+    if stats_df is not None:
+        st.write("Basic statistics (hybrid model):")
+        st.table(stats_df)   # compact, fixed-size table
+    else:
+        st.info("similarity_score_summary.csv not found in similarity_pipeline folder.")
 
-
-else:
-    st.info("similarity_score_summary.csv not found in similarity_pipeline folder.")
 
 # -------------------------------------------------
 # 2. Files produced by the similarity pipeline
