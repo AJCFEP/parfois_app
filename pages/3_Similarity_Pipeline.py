@@ -1,9 +1,9 @@
-import streamlit as st
-import pandas as pd
 import os
+import pandas as pd
+import streamlit as st
 
 # -------------------------------------------------
-# Paths (same logic as other pages)
+# Paths (go one level up from /pages to project root)
 # -------------------------------------------------
 BASE_DIR   = os.path.dirname(os.path.dirname(__file__))
 DATA_DIR   = os.path.join(BASE_DIR, "data")
@@ -13,9 +13,7 @@ REC_CSV    = os.path.join(DATA_DIR, "fashion_similarity_recommendations.csv")
 
 EDA_DIR    = os.path.join(BASE_DIR, "EDA image files to web")
 SIM_DIR    = os.path.join(EDA_DIR, "similarity_pipeline")
-
-# optional: folder with example grids created by show_product_and_matches
-# e.g., example_matches_145869_BL.png, example_matches_222875_TU.png
+IMAGES_DIR = os.path.join(BASE_DIR, "images")
 
 # -------------------------------------------------
 # Global style – SAME as app.py
@@ -47,27 +45,34 @@ st.markdown(
 # -------------------------------------------------
 @st.cache_data
 def load_rec_and_stats():
-    rec_df = pd.read_csv(REC_CSV)
+    if os.path.exists(REC_CSV):
+        rec_df = pd.read_csv(REC_CSV)
+    else:
+        rec_df = pd.DataFrame()
+
     stats_path = os.path.join(SIM_DIR, "similarity_score_summary.csv")
     stats_df = pd.read_csv(stats_path) if os.path.exists(stats_path) else None
     return rec_df, stats_df
 
-rec_df, stats_df = load_rec_and_stats()
 
 @st.cache_data
 def load_products():
     products_csv = os.path.join(DATA_DIR, "df_product.csv")
-    return pd.read_csv(products_csv, low_memory=False)
+    if os.path.exists(products_csv):
+        return pd.read_csv(products_csv, low_memory=False)
+    return pd.DataFrame()
 
-df_products = load_products()
 
 @st.cache_data
 def build_image_map(images_root: str):
     """
     Scan the images folder and build mapping: product_id -> list of image paths.
-    Assumes filenames like 140486_BM_1.jpg  -> product_id = '140486_BM'.
+    Assumes filenames like 140486_BM_1.jpg -> product_id = '140486_BM'.
     """
     mapping = {}
+    if not os.path.exists(images_root):
+        return mapping
+
     for root, _, files in os.walk(images_root):
         for fname in files:
             if fname.lower().endswith((".jpg", ".jpeg", ".png")):
@@ -80,7 +85,9 @@ def build_image_map(images_root: str):
                 mapping.setdefault(product_id, []).append(full_path)
     return mapping
 
-IMAGES_DIR = os.path.join(BASE_DIR, "images")
+
+rec_df, stats_df = load_rec_and_stats()
+df_products = load_products()
 image_map = build_image_map(IMAGES_DIR)
 
 # -------------------------------------------------
@@ -89,7 +96,10 @@ image_map = build_image_map(IMAGES_DIR)
 col_logo, col_title = st.columns([2, 3])
 
 with col_logo:
-    st.image(LOGO_PATH, use_container_width=True)
+    if os.path.exists(LOGO_PATH):
+        st.image(LOGO_PATH, use_container_width=True)
+    else:
+        st.write("parfois.png not found.")
 
 with col_title:
     st.markdown(
@@ -125,39 +135,209 @@ st.markdown(
 st.write(
     """
     This page explains the **end-to-end pipeline** used to compute
-    similarity between PARFOIS products, from images to the
-    `fashion_similarity_recommendations.csv` file used by the app.
+    similarity between PARFOIS products, and shows the main outputs
+    (embeddings, recommendations and similarity scores).
     """
 )
 
 # -------------------------------------------------
-# 1. Pipeline diagram / explanation
+# 1. Pipeline overview (diagram-style text)
 # -------------------------------------------------
 st.subheader("1. Pipeline overview")
 
 st.markdown(
     """
-```text
-Product images + metadata
-           |
-           v
-     CLIP image encoder
-   (ViT-B/32, pretrained)
-           |
-           v
-  512-dim image embeddings
-           |
-           v
-  L2 normalization of vectors
-           |
-           v
-Cosine similarity (dot product)
-           |
-           v
-Top-4 nearest neighbours per product
-  -> fashion_similarity_recommendations.csv
-           |
-           v
-Streamlit app:
- - Main page: product recommendations
- - This page: diagnostics & score analysis
+    The similarity pipeline follows these steps:
+
+    1. **Product images + metadata**  
+       Images are collected from the PARFOIS catalogue and linked to product IDs.
+
+    2. **CLIP image encoder (ViT-B/32)**  
+       Each image is passed through a pretrained CLIP model to obtain a
+       512-dimensional embedding that captures its visual content.
+
+    3. **L2 normalization**  
+       All embedding vectors are normalized so that their length is 1.
+       This allows us to use the dot product as cosine similarity.
+
+    4. **Cosine similarity**  
+       For each product, we compute cosine similarity to all other
+       products and select the Top-4 nearest neighbours.
+
+    5. **Recommendations file**  
+       The results are stored in
+       `fashion_similarity_recommendations.csv`, with the IDs and
+       similarity scores of the four closest products for each item.
+
+    6. **Streamlit app**  
+       - The **main page** uses this file to show similar products.  
+       - This **Similarity Pipeline** page shows diagnostics and score analysis.
+    """
+)
+
+hist_path = os.path.join(SIM_DIR, "similarity_score_hist.png")
+if os.path.exists(hist_path):
+    st.image(hist_path, caption="Distribution of similarity scores", width=500)
+else:
+    st.info("similarity_score_hist.png not found in similarity_pipeline folder.")
+
+if stats_df is not None:
+    st.write("Basic statistics of similarity scores:")
+    st.dataframe(stats_df)
+else:
+    st.info("similarity_score_summary.csv not found in similarity_pipeline folder.")
+
+# -------------------------------------------------
+# 2. Files produced by the similarity pipeline
+# -------------------------------------------------
+st.subheader("2. Files produced by the pipeline")
+
+files_info = [
+    ("clip_image_embeddings.npy", "Normalized CLIP image embeddings (NumPy array)."),
+    ("clip_image_embeddings.csv", "Product IDs with CLIP embedding coordinates."),
+    ("fashion_similarity_recommendations.csv", "Top-4 neighbors and similarity scores per product."),
+    ("similarity_score_summary.csv", "Summary stats of similarity scores."),
+    ("similarity_score_hist.png", "Histogram of similarity scores."),
+]
+
+rows = []
+for fname, desc in files_info:
+    fpath = os.path.join(SIM_DIR, fname)
+    exists = os.path.exists(fpath)
+    rows.append({"file": fname, "exists": "✅" if exists else "❌", "description": desc})
+
+st.table(pd.DataFrame(rows))
+
+# -------------------------------------------------
+# 3. Explore similarity scores (global view)
+# -------------------------------------------------
+st.subheader("3. Explore similarity scores")
+
+if not rec_df.empty:
+    score_cols = [c for c in rec_df.columns if c.endswith("_score")]
+    if score_cols:
+        all_scores = rec_df[score_cols].values.reshape(-1)
+
+        col_min, col_mean, col_max = st.columns(3)
+        col_min.metric("Minimum score", f"{all_scores.min():.3f}")
+        col_mean.metric("Average score", f"{all_scores.mean():.3f}")
+        col_max.metric("Maximum score", f"{all_scores.max():.3f}")
+
+        with st.expander("Show raw recommendations table (first 20 rows)", expanded=False):
+            st.dataframe(rec_df.head(20))
+    else:
+        st.info("No *_score columns found in recommendation CSV.")
+else:
+    st.warning(
+        "Recommendation file is empty or missing. "
+        "Check that the notebook saved fashion_similarity_recommendations.csv correctly."
+    )
+
+# -------------------------------------------------
+# 4. Interactive example: one product and its neighbors
+# -------------------------------------------------
+st.subheader("4. Example: product and nearest neighbors")
+
+if rec_df.empty or df_products.empty:
+    st.info(
+        "Not enough data to build the interactive example "
+        "(products or recommendations missing)."
+    )
+else:
+    df_products_local = df_products.copy()
+
+    # In your app, PROD_CLR is used as product_id
+    if "product_id" not in df_products_local.columns:
+        if "PROD_CLR" in df_products_local.columns:
+            df_products_local["product_id"] = df_products_local["PROD_CLR"]
+        else:
+            st.error(
+                "PROD_CLR column not found in df_product; "
+                "cannot match products to recommendations."
+            )
+            st.stop()
+
+    valid_ids = set(rec_df["product_id"])
+    df_prod_valid = df_products_local[df_products_local["product_id"].isin(valid_ids)].copy()
+
+    if df_prod_valid.empty:
+        st.warning("No overlap between df_product and recommendation product_ids.")
+    else:
+        def make_label(row):
+            return (
+                f"{row['PROD_COD']} | {row['CLR_DES']} | "
+                f"{row['product_id']} | {str(row['PROD_DES'])[:50]}"
+            )
+
+        df_prod_valid["label"] = df_prod_valid.apply(make_label, axis=1)
+        df_prod_valid = df_prod_valid.sort_values("label")
+
+        label_to_pid = dict(zip(df_prod_valid["label"], df_prod_valid["product_id"]))
+
+        selected_label = st.selectbox(
+            "Choose a product:",
+            options=list(label_to_pid.keys()),
+        )
+
+        selected_pid = label_to_pid[selected_label]
+
+        row_sel = df_prod_valid[df_prod_valid["product_id"] == selected_pid].iloc[0]
+        paths_sel = image_map.get(selected_pid, [])
+
+        # Recommendations for this product
+        rec_row = rec_df[rec_df["product_id"] == selected_pid].iloc[0]
+        sim_ids = [rec_row[f"sim_{i}_id"] for i in range(1, 5)]
+        sim_scores = [rec_row[f"sim_{i}_score"] for i in range(1, 5)]
+
+        col_sel, col_sims = st.columns([1, 3])
+
+        with col_sel:
+            st.markdown("**Selected product**")
+            st.write(
+                {
+                    "product_id": selected_pid,
+                    "PROD_COD": row_sel["PROD_COD"],
+                    "PROD_DES": row_sel["PROD_DES"],
+                    "CLR_DES": row_sel["CLR_DES"],
+                }
+            )
+            if paths_sel:
+                st.image(paths_sel[0], caption=f"{selected_pid}", width=280)
+            else:
+                st.info("No image found for this product in the images folder.")
+
+        with col_sims:
+            st.markdown("**Top 4 similar products (with scores)**")
+            sim_cols = st.columns(4)
+            rows_info = []
+
+            for col, pid_sim, score in zip(sim_cols, sim_ids, sim_scores):
+                with col:
+                    col.markdown(f"**{pid_sim}**")
+                    col.caption(f"Similarity: {score:.3f}")
+
+                    r = df_prod_valid[df_prod_valid["product_id"] == pid_sim]
+                    if not r.empty:
+                        r = r.iloc[0]
+                        col.write(r["PROD_DES"])
+                        col.caption(r["CLR_DES"])
+
+                    paths = image_map.get(pid_sim, [])
+                    if paths:
+                        col.image(paths[0], use_container_width=True)
+                    else:
+                        col.info("No image")
+
+                    rows_info.append(
+                        {
+                            "product_id": pid_sim,
+                            "similarity": score,
+                            "PROD_COD": r["PROD_COD"] if not r.empty else None,
+                            "PROD_DES": r["PROD_DES"] if not r.empty else None,
+                            "CLR_DES": r["CLR_DES"] if not r.empty else None,
+                        }
+                    )
+
+        if rows_info:
+            st.markdown("**Details of similar products**")
+            st.dataframe(pd.DataFrame(rows_info))
