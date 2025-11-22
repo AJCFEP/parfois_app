@@ -198,10 +198,13 @@ st.markdown(
 
     This project was developed by a group of MADSAD students from FEP – UP:
 
-    - **Student 1** – *Name to be inserted*
-    - **Student 2** – *Name to be inserted*
-    - **Student 3** – *Name to be inserted*
-    - **Student 4** – *Name to be inserted*
+    - **André Costa** – *up199401247@edu.fep.up.pt*
+    - **Catarina Monteiro** – *up202107961@edu.fep.up.pt*
+    - **João Monteiro** – *up202006793@edu.fep.up.pt*
+    - **Luis Ferreira** – *up202107032@edu.fep.up.pt*
+    - **Rodrigo Soares** – *up201602617@edu.fep.up.pt*
+    - **Telmo Barbosa** – *up201200195@edu.fep.up.pt*
+
     """
 )
 
