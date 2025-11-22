@@ -13,8 +13,8 @@ PRODUCTS_CSV = os.path.join(DATA_DIR, "df_product.csv")
 SALES_CSV    = os.path.join(DATA_DIR, "df_sales.csv")
 REC_CSV      = os.path.join(DATA_DIR, "fashion_similarity_recommendations.csv")
 
-# Folder with exported EDA figures from the notebook
-EDA_IMG_DIR = os.path.join(BASE_DIR, "EDA image files to web")
+# Folder with exported EDA figures + CSVs from the notebook
+EDA_DIR = os.path.join(BASE_DIR, "EDA image files to web")
 
 # -------------------------------------------------
 # Global style – SAME as app.py
@@ -52,6 +52,24 @@ def load_data():
     return df_products, df_sales, rec_df
 
 df_products, df_sales, rec_df = load_data()
+
+# ---- EDA tables (CSV summaries from notebook) ----
+@st.cache_data
+def load_eda_tables():
+    tables = {}
+    def safe_read(name):
+        path = os.path.join(EDA_DIR, name)
+        if os.path.exists(path):
+            return pd.read_csv(path)
+        return None
+
+    tables["prod_attr"]   = safe_read("df_products_attribute_summary.csv")
+    tables["prod_num"]    = safe_read("df_products_numeric_summary.csv")
+    tables["sales_attr"]  = safe_read("df_sales_attribute_summary.csv")
+    tables["sales_num"]   = safe_read("df_sales_numeric_summary.csv")
+    return tables
+
+eda_tables = load_eda_tables()
 
 # -------------------------------------------------
 # Header: EXACTLY like app.py
@@ -95,8 +113,9 @@ st.markdown(
 st.write(
     """
     This page provides an overview of the dataset used in the similarity
-    engine. You can inspect basic information and visual summaries
-    exported from the original EDA notebook.
+    engine. It combines **live summaries** from the current CSV files
+    with **static figures and tables** exported from the EDA notebook
+    used in the case study.
     """
 )
 
@@ -114,7 +133,7 @@ with st.expander("🔍 Column distribution (choose a column)", expanded=False):
     st.write(df_products[col].value_counts().head(30))
 
 # -------------------------------------------------
-# Static EDA figures exported from the notebook
+# Static EDA figures + CSV tables from the notebook
 # -------------------------------------------------
 st.markdown("## Notebook EDA Results")
 
@@ -126,80 +145,109 @@ tab_prod, tab_sales, tab_corr, tab_sales_rel = st.tabs(
 with tab_prod:
     st.subheader("Attribute types – df_products")
     st.image(
-        os.path.join(EDA_IMG_DIR, "df_products_dtype_counts.png"),
+        os.path.join(EDA_DIR, "df_products_dtype_counts.png"),
         caption="Count of attribute types – df_products",
         use_column_width=True,
     )
 
     st.subheader("Attribute type summaries – df_products")
-    # 3-block large table
+
+    # Image: 3-block big table
     st.image(
-        os.path.join(EDA_IMG_DIR, "df_products_attribute_3tables.png"),
+        os.path.join(EDA_DIR, "df_products_attribute_3tables.png"),
         caption="Attribute type summary – df_products (3 blocks)",
         use_column_width=True,
     )
 
-    # individual blocks, if you want them visible too
-    with st.expander("Show blocks 1–3 separately"):
+    # CSV table
+    if eda_tables["prod_attr"] is not None:
+        with st.expander("Show attribute summary table (CSV)", expanded=False):
+            st.dataframe(eda_tables["prod_attr"])
+    else:
+        st.info("CSV df_products_attribute_summary.csv not found in EDA folder.")
+
+    # Individual image blocks (optional)
+    with st.expander("Show blocks 1–3 separately (PNG)", expanded=False):
         st.image(
-            os.path.join(EDA_IMG_DIR, "df_products_attr_summary_block1.png"),
+            os.path.join(EDA_DIR, "df_products_attr_summary_block1.png"),
             caption="df_products – block 1",
             use_column_width=True,
         )
         st.image(
-            os.path.join(EDA_IMG_DIR, "df_products_attr_summary_block2.png"),
+            os.path.join(EDA_DIR, "df_products_attr_summary_block2.png"),
             caption="df_products – block 2",
             use_column_width=True,
         )
         st.image(
-            os.path.join(EDA_IMG_DIR, "df_products_attr_summary_block3.png"),
+            os.path.join(EDA_DIR, "df_products_attr_summary_block3.png"),
             caption="df_products – block 3",
             use_column_width=True,
         )
 
     st.subheader("Numeric summary – df_products (from notebook)")
+
+    # Image
     st.image(
-        os.path.join(EDA_IMG_DIR, "df_products_numeric_summary.png"),
+        os.path.join(EDA_DIR, "df_products_numeric_summary.png"),
         caption="Numeric summary – df_products",
         use_column_width=True,
     )
+
+    # CSV
+    if eda_tables["prod_num"] is not None:
+        with st.expander("Show numeric summary table (CSV)", expanded=False):
+            st.dataframe(eda_tables["prod_num"])
+    else:
+        st.info("CSV df_products_numeric_summary.csv not found in EDA folder.")
 
 # ---------- Sales ----------
 with tab_sales:
     st.subheader("Attribute types – df_sales")
     st.image(
-        os.path.join(EDA_IMG_DIR, "df_sales_dtype_counts.png"),
+        os.path.join(EDA_DIR, "df_sales_dtype_counts.png"),
         caption="Count of attribute types – df_sales",
         use_column_width=True,
     )
 
     st.subheader("Attribute type summary – df_sales")
     st.image(
-        os.path.join(EDA_IMG_DIR, "df_sales_attr_summary_block1.png"),
+        os.path.join(EDA_DIR, "df_sales_attr_summary_block1.png"),
         caption="Attribute type summary – df_sales",
         use_column_width=True,
     )
 
+    if eda_tables["sales_attr"] is not None:
+        with st.expander("Show sales attribute summary table (CSV)", expanded=False):
+            st.dataframe(eda_tables["sales_attr"])
+    else:
+        st.info("CSV df_sales_attribute_summary.csv not found in EDA folder.")
+
     st.subheader("Numeric summary – df_sales (from notebook)")
     st.image(
-        os.path.join(EDA_IMG_DIR, "df_sales_numeric_summary.png"),
+        os.path.join(EDA_DIR, "df_sales_numeric_summary.png"),
         caption="Numeric summary – df_sales",
         use_column_width=True,
     )
+
+    if eda_tables["sales_num"] is not None:
+        with st.expander("Show numeric summary table – sales (CSV)", expanded=False):
+            st.dataframe(eda_tables["sales_num"])
+    else:
+        st.info("CSV df_sales_numeric_summary.csv not found in EDA folder.")
 
 # ---------- Correlations ----------
 with tab_corr:
     st.subheader("Pearson correlation heatmap")
     st.image(
-        os.path.join(EDA_IMG_DIR, "pearson_correlation_heatmap.png"),
-        caption="Pearson Correlation Heatmap (quantitative features)",
+        os.path.join(EDA_DIR, "pearson_correlation_heatmap.png"),
+        caption="Pearson correlation heatmap (quantitative features)",
         use_column_width=True,
     )
 
     st.subheader("Spearman correlation heatmap")
     st.image(
-        os.path.join(EDA_IMG_DIR, "spearman_correlation_heatmap.png"),
-        caption="Spearman Correlation Heatmap (quantitative features)",
+        os.path.join(EDA_DIR, "spearman_correlation_heatmap.png"),
+        caption="Spearman correlation heatmap (quantitative features)",
         use_column_width=True,
     )
 
@@ -207,8 +255,7 @@ with tab_corr:
 with tab_sales_rel:
     st.subheader("Pairplot – key sales variables")
     st.image(
-        os.path.join(EDA_IMG_DIR, "sales_pairplot.png"),
+        os.path.join(EDA_DIR, "sales_pairplot.png"),
         caption="Pairplot of SALES_QTY and SALES_AMT_FX_RATE",
         use_column_width=True,
     )
-
