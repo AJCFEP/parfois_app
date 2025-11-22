@@ -180,7 +180,15 @@ sim_mode = st.radio(
 # pick the right recommendation dataframe
 rec_df = rec_dfs[sim_mode]
 
-st.caption(f"Current similarity source: {sim_mode}")
+# Short explanation for each similarity mode
+mode_explanations = {
+    "Text only": "Similarity based on product metadata text (title, description, etc.).",
+    "Image only (CLIP)": "Similarity based only on visual features extracted from product images.",
+    "Hybrid (Text + Image)": "Combined similarity using both text metadata and image features.",
+}
+
+st.caption(f"{sim_mode} – {mode_explanations.get(sim_mode, '')}")
+
 
 
 
