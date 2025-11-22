@@ -157,7 +157,8 @@ with tab_prod:
     st.image(
         os.path.join(EDA_DIR, "df_products_attribute_3tables.png"),
         caption="Attribute type summary – df_products (3 blocks)",
-        use_column_width=True,
+        #use_column_width=True,
+        width=300,
     )
 
     if eda_tables["prod_attr"] is not None:
@@ -168,24 +169,28 @@ with tab_prod:
         st.image(
             os.path.join(EDA_DIR, "df_products_attr_summary_block1.png"),
             caption="df_products – block 1",
-            use_column_width=True,
+            #use_column_width=True,
+            width=300,
         )
         st.image(
             os.path.join(EDA_DIR, "df_products_attr_summary_block2.png"),
             caption="df_products – block 2",
-            use_column_width=True,
+            #use_column_width=True,
+            width=300,
         )
         st.image(
             os.path.join(EDA_DIR, "df_products_attr_summary_block3.png"),
             caption="df_products – block 3",
-            use_column_width=True,
+            #use_column_width=True,
+            width=300,
         )
 
     st.subheader("Numeric summary – df_products (from notebook)")
     st.image(
         os.path.join(EDA_DIR, "df_products_numeric_summary.png"),
         caption="Numeric summary – df_products",
-        use_column_width=True,
+        #use_column_width=True,
+        width=300,
     )
 
     if eda_tables["prod_num"] is not None:
@@ -206,14 +211,16 @@ with tab_sales:
     st.image(
         os.path.join(EDA_DIR, "df_sales_dtype_counts.png"),
         caption="Count of attribute types – df_sales",
-        use_column_width=True,
+        #use_column_width=True,
+        width=300,
     )
 
     st.subheader("Attribute type summary – df_sales")
     st.image(
         os.path.join(EDA_DIR, "df_sales_attr_summary_block1.png"),
         caption="Attribute type summary – df_sales",
-        use_column_width=True,
+        #use_column_width=True,
+        width=300,
     )
 
     if eda_tables["sales_attr"] is not None:
@@ -224,7 +231,8 @@ with tab_sales:
     st.image(
         os.path.join(EDA_DIR, "df_sales_numeric_summary.png"),
         caption="Numeric summary – df_sales",
-        use_column_width=True,
+        #use_column_width=True,
+        width=300,
     )
 
     if eda_tables["sales_num"] is not None:
@@ -255,14 +263,16 @@ with tab_corr:
     st.image(
         os.path.join(EDA_DIR, "pearson_correlation_heatmap.png"),
         caption="Pearson correlation heatmap (quantitative features)",
-        use_column_width=True,
+        #use_column_width=True,
+        width=300,
     )
 
     st.subheader("Spearman correlation heatmap")
     st.image(
         os.path.join(EDA_DIR, "spearman_correlation_heatmap.png"),
         caption="Spearman correlation heatmap (quantitative features)",
-        use_column_width=True,
+        #use_column_width=True,
+        width=300,
     )
 
 # ---------- Sales relationships ----------
@@ -271,7 +281,8 @@ with tab_sales_rel:
     st.image(
         os.path.join(EDA_DIR, "sales_pairplot.png"),
         caption="Pairplot of SALES_QTY and SALES_AMT_FX_RATE",
-        use_column_width=True,
+        #use_column_width=True,
+        width=300,
     )
 
 # ---------- PCA ----------
