@@ -212,8 +212,8 @@ with tab_sales:
     st.image(
         os.path.join(EDA_DIR, "df_sales_dtype_counts.png"),
         caption="Count of attribute types – df_sales",
-        use_column_width=True,
-        #width=300,
+        #use_column_width=True,
+        width=700,
     )
 
     st.subheader("Attribute type summary – df_sales")

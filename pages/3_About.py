@@ -273,7 +273,7 @@ def show_references_by_phase():
     st.markdown("### References by Project Phase")
 
     selected_phase = st.selectbox(
-        "Select a phase of the pipeline:",
+        "Research references related with the phase of the pipeline:",
         phases,
         index=0,
     )
