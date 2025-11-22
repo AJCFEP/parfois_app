@@ -230,9 +230,15 @@ if os.path.exists(hist_path):
 else:
     st.info("similarity_score_hist.png not found in similarity_pipeline folder.")
 
+#if stats_df is not None:
+#    st.write("Basic statistics of similarity scores (hybrid model):")
+#    st.dataframe(stats_df)
+
 if stats_df is not None:
     st.write("Basic statistics of similarity scores (hybrid model):")
-    st.dataframe(stats_df)
+    st.table(stats_df)   # fixed size, clean, compact
+
+
 else:
     st.info("similarity_score_summary.csv not found in similarity_pipeline folder.")
 
