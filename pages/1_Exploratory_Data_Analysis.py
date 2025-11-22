@@ -151,7 +151,7 @@ with tab_prod:
         os.path.join(EDA_DIR, "df_products_dtype_counts.png"),
         caption="Count of attribute types – df_products",
         #use_column_width=True,
-        width=500,
+        width=700,
     )
 
     st.subheader("Attribute type summaries – df_products")
