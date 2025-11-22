@@ -288,25 +288,30 @@ with tab_sales_rel:
 
 # ---------- PCA ----------
 with tab_pca:
-    st.subheader("PCA – variance explained")
-    scree_path = os.path.join(PCA_DIR, "pca_scree_plot.png")
-    if os.path.exists(scree_path):
-        st.image(scree_path, caption="PCA – scree plot", use_column_width=True)
-    else:
-        st.info("PCA screen  plot not found. Regenerate it from the notebook.")
+    col1, col2 = st.columns(2)
 
-    st.subheader("PCA – PC1 vs PC2 scatter")
-    scatter_path = os.path.join(PCA_DIR, "pca_pc1_pc2_scatter.png")
-    if os.path.exists(scatter_path):
-        st.image(scatter_path, caption="PC1 vs PC2 scatter", use_column_width=True)
-    else:
-        st.info("PC1 vs PC2 scatter plot not found.")
+    with col1:
+        st.subheader("PCA – variance explained")
+        scree_path = os.path.join(PCA_DIR, "pca_scree_plot.png")
+        if os.path.exists(scree_path):
+            st.image(scree_path, caption="PCA – scree plot", use_column_width=True)
+        else:
+            st.info("PCA scree plot not found. Regenerate it from the notebook.")
 
+    with col2:
+        st.subheader("PCA – PC1 vs PC2 scatter")
+        scatter_path = os.path.join(PCA_DIR, "pca_pc1_pc2_scatter.png")
+        if os.path.exists(scatter_path):
+            st.image(scatter_path, caption="PC1 vs PC2 scatter", use_column_width=True)
+        else:
+            st.info("PC1 vs PC2 scatter plot not found.")
+
+    st.subheader("PCA variance table")
     if eda_tables["pca_var"] is not None:
-        st.subheader("PCA variance table")
         st.dataframe(eda_tables["pca_var"])
     else:
         st.info("pca_explained_variance.csv not found in PCA folder.")
+
 
 # ---------- Clustering ----------
 with tab_cluster:
