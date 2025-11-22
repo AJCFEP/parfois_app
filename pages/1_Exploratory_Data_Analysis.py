@@ -13,8 +13,12 @@ PRODUCTS_CSV = os.path.join(DATA_DIR, "df_product.csv")
 SALES_CSV    = os.path.join(DATA_DIR, "df_sales.csv")
 REC_CSV      = os.path.join(DATA_DIR, "fashion_similarity_recommendations.csv")
 
-# Folder with exported EDA figures + CSVs from the notebook
-EDA_DIR = os.path.join(BASE_DIR, "EDA image files to web")
+# Root EDA folder and subfolders as used in the notebook
+EDA_DIR            = os.path.join(BASE_DIR, "EDA image files to web")
+PRODUCT_STRUCT_DIR = os.path.join(EDA_DIR, "product_structure")
+SALES_STRUCT_DIR   = os.path.join(EDA_DIR, "sales_structure")
+PCA_DIR            = os.path.join(EDA_DIR, "pca")
+CLUSTER_DIR        = os.path.join(EDA_DIR, "clustering")
 
 # -------------------------------------------------
 # Global style – SAME as app.py
@@ -53,20 +57,19 @@ def load_data():
 
 df_products, df_sales, rec_df = load_data()
 
-# ---- EDA tables (CSV summaries from notebook) ----
+# EDA CSV tables
 @st.cache_data
 def load_eda_tables():
     tables = {}
-    def safe_read(name):
-        path = os.path.join(EDA_DIR, name)
-        if os.path.exists(path):
-            return pd.read_csv(path)
-        return None
+    def safe_read(path):
+        return pd.read_csv(path) if os.path.exists(path) else None
 
-    tables["prod_attr"]   = safe_read("df_products_attribute_summary.csv")
-    tables["prod_num"]    = safe_read("df_products_numeric_summary.csv")
-    tables["sales_attr"]  = safe_read("df_sales_attribute_summary.csv")
-    tables["sales_num"]   = safe_read("df_sales_numeric_summary.csv")
+    tables["prod_attr"]  = safe_read(os.path.join(EDA_DIR, "df_products_attribute_summary.csv"))
+    tables["prod_num"]   = safe_read(os.path.join(EDA_DIR, "df_products_numeric_summary.csv"))
+    tables["sales_attr"] = safe_read(os.path.join(EDA_DIR, "df_sales_attribute_summary.csv"))
+    tables["sales_num"]  = safe_read(os.path.join(EDA_DIR, "df_sales_numeric_summary.csv"))
+    tables["pca_var"]    = safe_read(os.path.join(PCA_DIR, "pca_explained_variance.csv"))
+    tables["kmeans_counts"] = safe_read(os.path.join(CLUSTER_DIR, "kmeans_cluster_counts.csv"))
     return tables
 
 eda_tables = load_eda_tables()
@@ -112,10 +115,9 @@ st.markdown(
 
 st.write(
     """
-    This page provides an overview of the dataset used in the similarity
-    engine. It combines **live summaries** from the current CSV files
-    with **static figures and tables** exported from the EDA notebook
-    used in the case study.
+    This page combines **live summaries** of the PARFOIS datasets with
+    **static figures and tables** exported from the original EDA notebook,
+    including PCA and clustering diagnostics.
     """
 )
 
@@ -133,15 +135,16 @@ with st.expander("🔍 Column distribution (choose a column)", expanded=False):
     st.write(df_products[col].value_counts().head(30))
 
 # -------------------------------------------------
-# Static EDA figures + CSV tables from the notebook
+# Tabs for notebook EDA results
 # -------------------------------------------------
 st.markdown("## Notebook EDA Results")
 
-tab_prod, tab_sales, tab_corr, tab_sales_rel = st.tabs(
-    ["Products structure", "Sales structure", "Correlations", "Sales relationships"]
+tab_prod, tab_sales, tab_corr, tab_sales_rel, tab_pca, tab_cluster = st.tabs(
+    ["Products structure", "Sales structure", "Correlations",
+     "Sales relationships", "PCA", "Clustering"]
 )
 
-# ---------- Products ----------
+# ---------- Products structure ----------
 with tab_prod:
     st.subheader("Attribute types – df_products")
     st.image(
@@ -151,22 +154,16 @@ with tab_prod:
     )
 
     st.subheader("Attribute type summaries – df_products")
-
-    # Image: 3-block big table
     st.image(
         os.path.join(EDA_DIR, "df_products_attribute_3tables.png"),
         caption="Attribute type summary – df_products (3 blocks)",
         use_column_width=True,
     )
 
-    # CSV table
     if eda_tables["prod_attr"] is not None:
         with st.expander("Show attribute summary table (CSV)", expanded=False):
             st.dataframe(eda_tables["prod_attr"])
-    else:
-        st.info("CSV df_products_attribute_summary.csv not found in EDA folder.")
 
-    # Individual image blocks (optional)
     with st.expander("Show blocks 1–3 separately (PNG)", expanded=False):
         st.image(
             os.path.join(EDA_DIR, "df_products_attr_summary_block1.png"),
@@ -185,22 +182,25 @@ with tab_prod:
         )
 
     st.subheader("Numeric summary – df_products (from notebook)")
-
-    # Image
     st.image(
         os.path.join(EDA_DIR, "df_products_numeric_summary.png"),
         caption="Numeric summary – df_products",
         use_column_width=True,
     )
 
-    # CSV
     if eda_tables["prod_num"] is not None:
         with st.expander("Show numeric summary table (CSV)", expanded=False):
             st.dataframe(eda_tables["prod_num"])
-    else:
-        st.info("CSV df_products_numeric_summary.csv not found in EDA folder.")
 
-# ---------- Sales ----------
+    # New: products numeric boxplots without BAR_COD
+    st.subheader("Boxplots – selected numeric attributes (excluding BAR_COD)")
+    prod_box_path = os.path.join(PRODUCT_STRUCT_DIR, "products_numeric_boxplots.png")
+    if os.path.exists(prod_box_path):
+        st.image(prod_box_path, use_column_width=True)
+    else:
+        st.info("Boxplot image not found. Regenerate it from the notebook.")
+
+# ---------- Sales structure ----------
 with tab_sales:
     st.subheader("Attribute types – df_sales")
     st.image(
@@ -219,8 +219,6 @@ with tab_sales:
     if eda_tables["sales_attr"] is not None:
         with st.expander("Show sales attribute summary table (CSV)", expanded=False):
             st.dataframe(eda_tables["sales_attr"])
-    else:
-        st.info("CSV df_sales_attribute_summary.csv not found in EDA folder.")
 
     st.subheader("Numeric summary – df_sales (from notebook)")
     st.image(
@@ -232,8 +230,24 @@ with tab_sales:
     if eda_tables["sales_num"] is not None:
         with st.expander("Show numeric summary table – sales (CSV)", expanded=False):
             st.dataframe(eda_tables["sales_num"])
-    else:
-        st.info("CSV df_sales_numeric_summary.csv not found in EDA folder.")
+
+    # New: sales boxplots
+    st.subheader("Boxplots – sales metrics")
+    col1, col2 = st.columns(2)
+    qty_path = os.path.join(SALES_STRUCT_DIR, "sales_qty_boxplot.png")
+    amt_path = os.path.join(SALES_STRUCT_DIR, "sales_amt_fx_rate_boxplot.png")
+
+    with col1:
+        if os.path.exists(qty_path):
+            st.image(qty_path, caption="SALES_QTY boxplot", use_column_width=True)
+        else:
+            st.info("SALES_QTY boxplot not found.")
+
+    with col2:
+        if os.path.exists(amt_path):
+            st.image(amt_path, caption="SALES_AMT_FX_RATE boxplot", use_column_width=True)
+        else:
+            st.info("SALES_AMT_FX_RATE boxplot not found.")
 
 # ---------- Correlations ----------
 with tab_corr:
@@ -259,3 +273,50 @@ with tab_sales_rel:
         caption="Pairplot of SALES_QTY and SALES_AMT_FX_RATE",
         use_column_width=True,
     )
+
+# ---------- PCA ----------
+with tab_pca:
+    st.subheader("PCA – variance explained")
+    scree_path = os.path.join(PCA_DIR, "pca_scree_plot.png")
+    if os.path.exists(scree_path):
+        st.image(scree_path, caption="PCA – scree plot", use_column_width=True)
+    else:
+        st.info("PCA scree plot not found. Regenerate it from the notebook.")
+
+    st.subheader("PCA – PC1 vs PC2 scatter")
+    scatter_path = os.path.join(PCA_DIR, "pca_pc1_pc2_scatter.png")
+    if os.path.exists(scatter_path):
+        st.image(scatter_path, caption="PC1 vs PC2 scatter", use_column_width=True)
+    else:
+        st.info("PC1 vs PC2 scatter plot not found.")
+
+    if eda_tables["pca_var"] is not None:
+        st.subheader("PCA variance table")
+        st.dataframe(eda_tables["pca_var"])
+    else:
+        st.info("pca_explained_variance.csv not found in PCA folder.")
+
+# ---------- Clustering ----------
+with tab_cluster:
+    st.subheader("K-Means diagnostics")
+
+    elbow_path = os.path.join(CLUSTER_DIR, "kmeans_elbow_curve.png")
+    sil_path   = os.path.join(CLUSTER_DIR, "kmeans_silhouette_scores.png")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if os.path.exists(elbow_path):
+            st.image(elbow_path, caption="Elbow curve", use_column_width=True)
+        else:
+            st.info("Elbow curve image not found.")
+    with col2:
+        if os.path.exists(sil_path):
+            st.image(sil_path, caption="Silhouette scores", use_column_width=True)
+        else:
+            st.info("Silhouette scores image not found.")
+
+    if eda_tables["kmeans_counts"] is not None:
+        st.subheader("Cluster size distribution (k-means)")
+        st.dataframe(eda_tables["kmeans_counts"])
+    else:
+        st.info("kmeans_cluster_counts.csv not found in clustering folder.")
