@@ -264,7 +264,7 @@ with tab_corr:
         os.path.join(EDA_DIR, "pearson_correlation_heatmap.png"),
         caption="Pearson correlation heatmap (quantitative features)",
         #use_column_width=True,
-        width=300,
+        width=500,
     )
 
     st.subheader("Spearman correlation heatmap")
@@ -272,7 +272,7 @@ with tab_corr:
         os.path.join(EDA_DIR, "spearman_correlation_heatmap.png"),
         caption="Spearman correlation heatmap (quantitative features)",
         #use_column_width=True,
-        width=300,
+        width=500,
     )
 
 # ---------- Sales relationships ----------
@@ -292,7 +292,7 @@ with tab_pca:
     if os.path.exists(scree_path):
         st.image(scree_path, caption="PCA – scree plot", use_column_width=True)
     else:
-        st.info("PCA scree plot not found. Regenerate it from the notebook.")
+        st.info("PCA screen plot not found. Regenerate it from the notebook.")
 
     st.subheader("PCA – PC1 vs PC2 scatter")
     scatter_path = os.path.join(PCA_DIR, "pca_pc1_pc2_scatter.png")
