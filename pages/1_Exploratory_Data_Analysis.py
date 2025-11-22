@@ -150,7 +150,8 @@ with tab_prod:
     st.image(
         os.path.join(EDA_DIR, "df_products_dtype_counts.png"),
         caption="Count of attribute types – df_products",
-        use_column_width=True,
+        #use_column_width=True,
+        width=500,
     )
 
     st.subheader("Attribute type summaries – df_products")
@@ -292,7 +293,7 @@ with tab_pca:
     if os.path.exists(scree_path):
         st.image(scree_path, caption="PCA – scree plot", use_column_width=True)
     else:
-        st.info("PCA screen plot not found. Regenerate it from the notebook.")
+        st.info("PCA screen  plot not found. Regenerate it from the notebook.")
 
     st.subheader("PCA – PC1 vs PC2 scatter")
     scatter_path = os.path.join(PCA_DIR, "pca_pc1_pc2_scatter.png")
