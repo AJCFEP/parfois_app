@@ -215,9 +215,95 @@ st.markdown(
 
     - Reimers, N., & Gurevych, I. (2019). *Sentence-BERT: Sentence
       Embeddings using Siamese BERT-Networks.*
-    - Streamlit Inc. **Streamlit Documentation** – *Build data apps in Python*.
+    - Streamlit Inc. (2024). Streamlit documentation. Retrieved from https://docs.streamlit.io/
     - Pedregosa, F. et al. (2011). *Scikit-learn: Machine Learning in
       Python.* Journal of Machine Learning Research.
+
+      
+
+      import streamlit as st
+
+def show_references_by_phase():
+    phases = [
+        "1. Data Preparation & Exploratory Data Analysis (EDA)",
+        "2. Dimensionality Reduction & Clustering",
+        "3. Visual Representation Learning (CLIP)",
+        "4. Similarity Computation",
+        "5. Content-Based Recommender Logic",
+        "6. Web Application & Deployment",
+        "7. Optional: Text Similarity (Sentence-BERT)",
+    ]
+
+    refs_by_phase = {
+        phases[0]: """
+**References – Data Preparation & EDA**
+
+- Harris, C. R., Millman, K. J., van der Walt, S. J., Gommers, R., Virtanen, P., Cournapeau, D., et al. (2020). *Array programming with NumPy.* Nature, 585, 357–362.
+- van der Walt, S., Colbert, S. C., & Varoquaux, G. (2011). *The NumPy array: A structure for efficient numerical computation.* Computing in Science & Engineering, 13(2), 22–30.
+- McKinney, W. (2011). *pandas: A foundational Python library for data analysis and statistics.* Proceedings of the Python for Scientific Computing Conference (SciPy).
+- Hunter, J. D. (2007). *Matplotlib: A 2D graphics environment.* Computing in Science & Engineering, 9(3), 90–95.
+- Waskom, M. L. (2021). *seaborn: Statistical data visualization.* Journal of Open Source Software, 6(60), 3021.
+""",
+        phases[1]: """
+**References – Dimensionality Reduction & Clustering**
+
+- Jolliffe, I. T. (2002). *Principal component analysis* (2nd ed.). Springer.
+- Lloyd, S. P. (1982). *Least squares quantization in PCM.* IEEE Transactions on Information Theory, 28(2), 129–137.
+- MacQueen, J. (1967). *Some methods for classification and analysis of multivariate observations.* Proceedings of the Fifth Berkeley Symposium on Mathematical Statistics and Probability.
+- Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., et al. (2011). *Scikit-learn: Machine learning in Python.* Journal of Machine Learning Research, 12, 2825–2830.
+""",
+        phases[2]: """
+**References – Visual Representation Learning (CLIP)**
+
+- Radford, A., Kim, J. W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., et al. (2021). *Learning transferable visual models from natural language supervision.* Proceedings of the 38th International Conference on Machine Learning (ICML), PMLR 139.
+- Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J., Chanan, G., et al. (2019). *PyTorch: An imperative style, high-performance deep learning library.* Advances in Neural Information Processing Systems, 32.
+""",
+        phases[3]: """
+**References – Similarity Computation**
+
+- Manning, C. D., Raghavan, P., & Schütze, H. (2008). *Introduction to information retrieval.* Cambridge University Press.
+- Harris, C. R., Millman, K. J., van der Walt, S. J., Gommers, R., Virtanen, P., Cournapeau, D., et al. (2020). *Array programming with NumPy.* Nature, 585, 357–362.
+""",
+        phases[4]: """
+**References – Content-Based Recommender Logic**
+
+- Aggarwal, C. C. (2016). *Recommender systems: The textbook.* Springer.
+- Lü, L., Medo, M., Yeung, C. H., Zhang, Y.-C., Zhang, Z.-K., & Zhou, T. (2012). *Recommender systems.* Physics Reports, 519(1), 1–49.
+""",
+        phases[5]: """
+**References – Web Application & Deployment**
+
+- Streamlit Inc. (2024). *Streamlit documentation.* Retrieved from https://docs.streamlit.io
+""",
+        phases[6]: """
+**References – Optional Text Similarity (Sentence-BERT)**
+
+- Reimers, N., & Gurevych, I. (2019). *Sentence-BERT: Sentence embeddings using Siamese BERT-network.* Proceedings of EMNLP-IJCNLP, 3982–3992.
+"""
+    }
+
+    st.subheader("References by project phase")
+
+    selected_phase = st.selectbox(
+        "Select a phase of the pipeline:",
+        phases,
+        index=0,
+    )
+
+    st.markdown(refs_by_phase[selected_phase])
+
+
+# Call this where you want the references section to appear in your page:
+# show_references_by_phase()
+
+
+
+
+
+
+
+
+
 
     """
 )
