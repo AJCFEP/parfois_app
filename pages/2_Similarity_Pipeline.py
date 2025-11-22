@@ -237,6 +237,7 @@ else:
 if stats_df is not None:
     st.write("Basic statistics of similarity scores (hybrid model):")
     st.table(stats_df)   # fixed size, clean, compact
+    width=500,
 
 
 else:
