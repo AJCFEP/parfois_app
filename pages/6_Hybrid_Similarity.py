@@ -9,13 +9,13 @@ BASE_DIR   = os.path.dirname(os.path.dirname(__file__))
 DATA_DIR   = os.path.join(BASE_DIR, "data")
 LOGO_PATH  = os.path.join(BASE_DIR, "parfois.png")
 
-PRODUCTS_CSV    = os.path.join(DATA_DIR, "df_product.csv")
-REC_TEXT_CSV    = os.path.join(DATA_DIR, "fashion_similarity_recommendations_text.csv")
-REC_IMAGE_CSV   = os.path.join(DATA_DIR, "fashion_similarity_recommendations_clip.csv")
-REC_HYBRID_CSV  = os.path.join(DATA_DIR, "fashion_similarity_recommendations_hybrid.csv")
+PRODUCTS_CSV   = os.path.join(DATA_DIR, "df_product.csv")
+REC_TEXT_CSV   = os.path.join(DATA_DIR, "fashion_similarity_recommendations_text.csv")
+REC_IMAGE_CSV  = os.path.join(DATA_DIR, "fashion_similarity_recommendations_clip.csv")
+REC_HYBRID_CSV = os.path.join(DATA_DIR, "fashion_similarity_recommendations_hybrid.csv")
 
-EDA_DIR   = os.path.join(BASE_DIR, "EDA image files to web")
-SIM_DIR   = os.path.join(EDA_DIR, "similarity_pipeline")
+EDA_DIR    = os.path.join(BASE_DIR, "EDA image files to web")
+SIM_DIR    = os.path.join(EDA_DIR, "similarity_pipeline")
 IMAGES_DIR = os.path.join(BASE_DIR, "images")
 
 # -------------------------------------------------
@@ -126,7 +126,7 @@ st.markdown("<hr>", unsafe_allow_html=True)
 # -------------------------------------------------
 st.markdown(
     """
-    # Hybrid similarity (Text + Image)
+    # Hybrid Similarity (Text + Image)
 
     This page explains how the **hybrid similarity model** combines
     information from **text embeddings** and **image embeddings (CLIP)**
@@ -202,13 +202,22 @@ st.markdown(
     """
 )
 
-# Optional: show hybrid score histogram if available (from SIM_DIR)
-hist_path = os.path.join(SIM_DIR, "similarity_score_hist.png")
-if os.path.exists(hist_path):
+# -------------------------------------------------
+# 2.1 Diagram – Hybrid similarity pipeline
+# -------------------------------------------------
+st.subheader("Diagram – Hybrid similarity pipeline")
+
+hybrid_diag_path = os.path.join(SIM_DIR, "hybrid_similarity_pipeline.png")
+if os.path.exists(hybrid_diag_path):
     st.image(
-        hist_path,
-        caption="Distribution of hybrid similarity scores (Top-4 neighbours)",
-        width=500,
+        hybrid_diag_path,
+        caption="Hybrid similarity pipeline (text + image similarity combined).",
+        use_column_width=True,
+    )
+else:
+    st.info(
+        "hybrid_similarity_pipeline.png not found in similarity_pipeline folder. "
+        "Place the diagram in 'EDA image files to web/similarity_pipeline'."
     )
 
 # -------------------------------------------------
@@ -346,7 +355,31 @@ else:
                     st.dataframe(df_hyb)
 
             # Optional: combined comparison in an expander
-            if not any(df.empty for df in [df_text, df_img, df_hyb]):
+            if not (df_text.empty and df_img.empty and df_hyb.empty):
                 with st.expander("Compare neighbours across all modes", expanded=False):
-                    combined = pd.concat([df_text, df_img, df_hyb], ignore_index=True)
+                    combined = pd.concat(
+                        [df for df in [df_text, df_img, df_hyb] if not df.empty],
+                        ignore_index=True,
+                    )
                     st.dataframe(combined)
+
+# -------------------------------------------------
+# 4. References
+# -------------------------------------------------
+st.subheader("References to go further on the subject")
+
+st.markdown(
+    """
+- Radford, A., Kim, J. W., Hallacy, C., et al. (2021).  
+  *Learning transferable visual models from natural language supervision (CLIP).*
+
+- Reimers, N., & Gurevych, I. (2019).  
+  *Sentence-BERT: Sentence embeddings using Siamese BERT-Networks.*
+
+- Aggarwal, C. C. (2016).  
+  *Recommender Systems: The Textbook.* Springer.
+
+- Baltrušaitis, T., Ahuja, C., & Morency, L.-P. (2019).  
+  *Multimodal machine learning: A survey and taxonomy.*
+"""
+)

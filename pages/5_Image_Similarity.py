@@ -9,8 +9,8 @@ BASE_DIR   = os.path.dirname(os.path.dirname(__file__))
 DATA_DIR   = os.path.join(BASE_DIR, "data")
 LOGO_PATH  = os.path.join(BASE_DIR, "parfois.png")
 
-PRODUCTS_CSV    = os.path.join(DATA_DIR, "df_product.csv")
-REC_IMAGE_CSV   = os.path.join(DATA_DIR, "fashion_similarity_recommendations_clip.csv")
+PRODUCTS_CSV  = os.path.join(DATA_DIR, "df_product.csv")
+REC_IMAGE_CSV = os.path.join(DATA_DIR, "fashion_similarity_recommendations_clip.csv")
 
 EDA_DIR    = os.path.join(BASE_DIR, "EDA image files to web")
 SIM_DIR    = os.path.join(EDA_DIR, "similarity_pipeline")
@@ -81,9 +81,9 @@ def build_image_map(images_root: str):
     return mapping
 
 
-df_products   = load_products()
-rec_image_df  = load_image_recs()
-image_map     = build_image_map(IMAGES_DIR)
+df_products  = load_products()
+rec_image_df = load_image_recs()
+image_map    = build_image_map(IMAGES_DIR)
 
 # -------------------------------------------------
 # Header: EXACTLY like app.py
@@ -119,7 +119,7 @@ st.markdown("<hr>", unsafe_allow_html=True)
 # -------------------------------------------------
 st.markdown(
     """
-    # Image similarity (CLIP)
+    # Image Similarity (CLIP)
 
     This page explains how **image-based similarity** is computed using
     **CLIP (Contrastive Language–Image Pretraining)**, and how it is
@@ -128,7 +128,7 @@ st.markdown(
 )
 
 # -------------------------------------------------
-# 1. Brief history of image–text models and CLIP
+# 1. Brief history of visual features and CLIP
 # -------------------------------------------------
 st.subheader("1. From CNN features to CLIP")
 
@@ -197,6 +197,24 @@ st.markdown(
          similar products and their similarity scores.
     """
 )
+
+# -------------------------------------------------
+# 2.1 Diagram – CLIP image similarity pipeline
+# -------------------------------------------------
+st.subheader("Diagram – Image similarity pipeline (CLIP)")
+
+clip_diag_path = os.path.join(SIM_DIR, "clip_image_similarity_pipeline.png")
+if os.path.exists(clip_diag_path):
+    st.image(
+        clip_diag_path,
+        caption="Image similarity pipeline (product images → CLIP → cosine similarity).",
+        use_column_width=True,
+    )
+else:
+    st.info(
+        "clip_image_similarity_pipeline.png not found in similarity_pipeline folder. "
+        "Place the diagram in 'EDA image files to web/similarity_pipeline'."
+    )
 
 # -------------------------------------------------
 # 3. Example – visually similar products (CLIP)
@@ -291,9 +309,27 @@ else:
 
                         paths = image_map.get(pid_sim, [])
                         if paths:
-                            col.image(paths[0], use_container_width=True)
+                            col.image(paths[0], use_column_width=True)
                         else:
                             col.info("No image")
+                            # -------------------------------------------------
+# 4. References
+# -------------------------------------------------
+st.subheader("References to go further on the subject")
 
-# (Optional) you could also show similarity histograms from SIM_DIR here
-# if you later export specific image-only diagnostics.
+st.markdown(
+    """
+- Radford, A., Kim, J. W., Hallacy, C., et al. (2021).  
+  *Learning transferable visual models from natural language supervision (CLIP).*
+
+- Dosovitskiy, A., Beyer, L., Kolesnikov, A., et al. (2021).  
+  *An image is worth 16×16 words: Transformers for image recognition at scale (ViT).*
+
+- Krizhevsky, A., Sutskever, I., & Hinton, G. E. (2012).  
+  *ImageNet classification with deep convolutional neural networks.*
+
+- Goodfellow, I., Bengio, Y., & Courville, A. (2016).  
+  *Deep Learning.* MIT Press. (Chapters on CNNs and representation learning)
+"""
+)
+

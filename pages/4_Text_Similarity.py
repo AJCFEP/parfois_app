@@ -9,11 +9,11 @@ BASE_DIR  = os.path.dirname(os.path.dirname(__file__))
 DATA_DIR  = os.path.join(BASE_DIR, "data")
 LOGO_PATH = os.path.join(BASE_DIR, "parfois.png")
 
-PRODUCTS_CSV    = os.path.join(DATA_DIR, "df_product.csv")
-REC_TEXT_CSV    = os.path.join(DATA_DIR, "fashion_similarity_recommendations_text.csv")
+PRODUCTS_CSV = os.path.join(DATA_DIR, "df_product.csv")
+REC_TEXT_CSV = os.path.join(DATA_DIR, "fashion_similarity_recommendations_text.csv")
 
-EDA_DIR   = os.path.join(BASE_DIR, "EDA image files to web")
-SIM_DIR   = os.path.join(EDA_DIR, "similarity_pipeline")
+EDA_DIR = os.path.join(BASE_DIR, "EDA image files to web")
+SIM_DIR = os.path.join(EDA_DIR, "similarity_pipeline")  # where diagrams live
 
 # -------------------------------------------------
 # Global style – SAME as app.py
@@ -94,7 +94,7 @@ st.markdown("<hr>", unsafe_allow_html=True)
 # -------------------------------------------------
 st.markdown(
     """
-    # Text similarity 
+    # Text Similarity
 
     This page explains how **text-based similarity** is computed in the
     project: a brief historical perspective, how **Transformer models**
@@ -183,6 +183,24 @@ st.markdown(
          file to show similar products and their cosine similarity scores.
     """
 )
+
+# -------------------------------------------------
+# 2.1 Diagram – Text similarity pipeline
+# -------------------------------------------------
+st.subheader("Diagram – Text similarity pipeline")
+
+text_diag_path = os.path.join(SIM_DIR, "text_similarity_pipeline.png")
+if os.path.exists(text_diag_path):
+    st.image(
+        text_diag_path,
+        caption="Text similarity pipeline (metadata → Sentence-BERT → cosine similarity).",
+        use_column_width=True,
+    )
+else:
+    st.info(
+        "text_similarity_pipeline.png not found in similarity_pipeline folder. "
+        "Place the diagram in 'EDA image files to web/similarity_pipeline'."
+    )
 
 # -------------------------------------------------
 # 3. Example – inspecting text-based neighbours
@@ -274,5 +292,23 @@ else:
             else:
                 st.info("No detailed metadata found for neighbours.")
 
-# (Optional) if you later export any text-specific diagnostic image,
-# you can show it here with os.path.exists checks from SIM_DIR.
+# -------------------------------------------------
+# 4. References
+# -------------------------------------------------
+st.subheader("References to go further on the subject")
+
+st.markdown(
+    """
+- Devlin, J., Chang, M.-W., Lee, K., & Toutanova, K. (2019).  
+  *BERT: Pre-training of deep bidirectional transformers for language understanding.*
+
+- Vaswani, A., Shazeer, N., Parmar, N., et al. (2017).  
+  *Attention is all you need.* Advances in Neural Information Processing Systems.
+
+- Reimers, N., & Gurevych, I. (2019).  
+  *Sentence-BERT: Sentence embeddings using Siamese BERT-Networks.*
+
+- Manning, C. D., Raghavan, P., & Schütze, H. (2008).  
+  *Introduction to Information Retrieval.* Cambridge University Press.
+"""
+)
