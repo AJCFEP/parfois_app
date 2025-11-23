@@ -213,7 +213,7 @@ if os.path.exists(hybrid_diag_path):
         hybrid_diag_path,
         caption="Hybrid similarity pipeline (text + image similarity combined).",
         #use_column_width=True,
-        width=600
+        width=500
     )
 else:
     st.info(
