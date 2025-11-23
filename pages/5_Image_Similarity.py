@@ -119,7 +119,7 @@ st.markdown("<hr>", unsafe_allow_html=True)
 # -------------------------------------------------
 st.markdown(
     """
-    # Image Similitude (CLIP)
+    # Image similarity (CLIP)
 
     This page explains how **image-based similarity** is computed using
     **CLIP (Contrastive Language–Image Pretraining)**, and how it is
@@ -161,11 +161,11 @@ st.markdown(
 # -------------------------------------------------
 # 2. Image similarity pipeline in this project
 # -------------------------------------------------
-st.subheader("2. How CLIP-based similitude is computed here")
+st.subheader("2. How CLIP-based similarity is computed here")
 
 st.markdown(
     """
-    In this case study, image similitude between products follows these steps:
+    In this case study, image similarity between products follows these steps:
 
     1. **Image collection**
        - Each product is associated with one or more image files
@@ -241,7 +241,7 @@ else:
         label_to_pid = dict(zip(df_valid["label"], df_valid["product_id"]))
 
         selected_label = st.selectbox(
-            "Choose a product to inspect (image similitude):",
+            "Choose a product to inspect (image similarity):",
             options=list(label_to_pid.keys()),
         )
 

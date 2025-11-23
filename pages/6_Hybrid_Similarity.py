@@ -126,11 +126,11 @@ st.markdown("<hr>", unsafe_allow_html=True)
 # -------------------------------------------------
 st.markdown(
     """
-    # Hybrid Similitude (Text + Image)
+    # Hybrid similarity (Text + Image)
 
     This page explains how the **hybrid similarity model** combines
     information from **text embeddings** and **image embeddings (CLIP)**
-    to produce a more robust notion of product similitude.
+    to produce a more robust notion of product similarity.
     """
 )
 
