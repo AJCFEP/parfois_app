@@ -94,7 +94,7 @@ st.markdown("<hr>", unsafe_allow_html=True)
 # -------------------------------------------------
 st.markdown(
     """
-    # Text similarity
+    # Text similarity 
 
     This page explains how **text-based similarity** is computed in the
     project: a brief historical perspective, how **Transformer models**
