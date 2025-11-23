@@ -208,7 +208,8 @@ if os.path.exists(clip_diag_path):
     st.image(
         clip_diag_path,
         caption="Image similarity pipeline (product images → CLIP → cosine similarity).",
-        use_column_width=True,
+        #use_column_width=True,
+        width=600
     )
 else:
     st.info(

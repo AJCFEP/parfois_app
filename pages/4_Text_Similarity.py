@@ -194,7 +194,8 @@ if os.path.exists(text_diag_path):
     st.image(
         text_diag_path,
         caption="Text similarity pipeline (metadata → Sentence-BERT → cosine similarity).",
-        use_column_width=True,
+        #use_column_width=True,
+        width=600
     )
 else:
     st.info(
