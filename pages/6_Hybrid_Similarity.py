@@ -540,14 +540,14 @@ else:
         if rows_alpha:
             df_neighbors_alpha = pd.DataFrame(rows_alpha)
 
-            # --- IMAGES FIRST ---
+            # --- IMAGES FIRST (closer to the table) ---
             st.markdown(
                 """
                 <div style="
                     font-size:18px;
                     font-weight:500;
-                    margin-top:0.4rem;
-                    margin-bottom:0.2rem;">
+                    margin-top:0.1rem;   /* was 0.4rem */
+                    margin-bottom:0.1rem;">
                     Visual view of neighbours (with current α)
                 </div>
                 """,
@@ -567,10 +567,19 @@ else:
                         f"Text: {row_n['text_score']:.3f} | "
                         f"Image: {row_n['image_score']:.3f}"
                     )
+
+                    # small negative margin to pull image up
+                    st.markdown(
+                        '<div style="margin-top:-0.4rem;"></div>',
+                        unsafe_allow_html=True,
+                    )
+
                     if paths_n:
-                        st.image(paths_n[0], use_container_width=True)
+                        # smaller image (adjust width if you want)
+                        st.image(paths_n[0], width=220)
                     else:
                         st.info("No image available")
+
 
             # --- TABLE AFTER IMAGES ---
             st.markdown(
