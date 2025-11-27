@@ -519,8 +519,30 @@ else:
         if rows_alpha:
             df_neighbors_alpha = pd.DataFrame(rows_alpha)
             st.dataframe(df_neighbors_alpha)
+
+            # --- Show images for the neighbours ---
+            st.markdown("#### Visual view of neighbours (with current α)")
+            cols = st.columns(len(df_neighbors_alpha))
+
+            for col, (_, row_n) in zip(cols, df_neighbors_alpha.iterrows()):
+                pid_n = row_n["neighbor_product_id"]
+                paths_n = image_map.get(pid_n, [])
+
+                with col:
+                    st.markdown(f"**{pid_n}**")
+                    st.caption(
+                        f"Hybrid: {row_n['hybrid_score']:.3f}  \n"
+                        f"Text: {row_n['text_score']:.3f} | "
+                        f"Image: {row_n['image_score']:.3f}"
+                    )
+
+                    if paths_n:
+                        st.image(paths_n[0], use_container_width=True)
+                    else:
+                        st.info("No image available")
         else:
             st.info("No neighbours found for this configuration.")
+
 
 # -------------------------------------------------
 # 5. References
