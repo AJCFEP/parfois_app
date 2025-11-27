@@ -414,7 +414,6 @@ else:
                         ignore_index=True,
                     )
                     st.dataframe(combined)
-
 # -------------------------------------------------
 # 4. Experiment with the text–image weight α
 # -------------------------------------------------
@@ -453,7 +452,8 @@ else:
         df_alpha = df_alpha.sort_values("label")
         label_to_pid2 = dict(zip(df_alpha["label"], df_alpha["product_id"]))
 
-        col_left, col_right = st.columns([2, 3])
+        # --- Top row: selector + product image + formula ---
+        col_left, col_center, col_right = st.columns([2, 1.2, 2])
 
         with col_left:
             selected_label2 = st.selectbox(
@@ -471,6 +471,15 @@ else:
                 help="Hybrid similarity = α·Text + (1−α)·Image",
             )
 
+        # show image of the selected product next to the selector
+        with col_center:
+            paths_sel2 = image_map.get(selected_pid2, [])
+            st.markdown("**Selected product image**")
+            if paths_sel2:
+                st.image(paths_sel2[0], caption=selected_pid2, use_container_width=True)
+            else:
+                st.info("No image found for this product.")
+
         with col_right:
             st.markdown(
                 f"""
@@ -479,7 +488,7 @@ else:
                 """
             )
 
-        # Compute similarities for this product only
+        # --- Compute similarities for this product only ---
         idx_pid = hybrid_ids.index(selected_pid2)
         t_vec = T_emb[idx_pid]          # (d_text,)
         i_vec = I_emb[idx_pid]          # (d_img,)
@@ -520,7 +529,7 @@ else:
             df_neighbors_alpha = pd.DataFrame(rows_alpha)
             st.dataframe(df_neighbors_alpha)
 
-            # --- Show images for the neighbours ---
+            # --- Visual grid of neighbour images ---
             st.markdown("#### Visual view of neighbours (with current α)")
             cols = st.columns(len(df_neighbors_alpha))
 
@@ -535,7 +544,6 @@ else:
                         f"Text: {row_n['text_score']:.3f} | "
                         f"Image: {row_n['image_score']:.3f}"
                     )
-
                     if paths_n:
                         st.image(paths_n[0], use_container_width=True)
                     else:
