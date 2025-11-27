@@ -537,11 +537,10 @@ else:
                     }
                 )
 
-        if rows_alpha:
+               if rows_alpha:
             df_neighbors_alpha = pd.DataFrame(rows_alpha)
-            st.dataframe(df_neighbors_alpha)
 
-            # Visual grid of neighbour images (also with tight top margin)
+            # --- IMAGES FIRST ---
             st.markdown(
                 """
                 <div style="
@@ -572,8 +571,24 @@ else:
                         st.image(paths_n[0], use_container_width=True)
                     else:
                         st.info("No image available")
+
+            # --- TABLE AFTER IMAGES ---
+            st.markdown(
+                """
+                <div style="
+                    font-size:18px;
+                    font-weight:500;
+                    margin-top:0.6rem;
+                    margin-bottom:0.2rem;">
+                    Tabular view of neighbours (scores with current α)
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            st.dataframe(df_neighbors_alpha)
         else:
             st.info("No neighbours found for this configuration.")
+
 
 
 
