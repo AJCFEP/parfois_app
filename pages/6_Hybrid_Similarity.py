@@ -537,7 +537,7 @@ else:
                     }
                 )
 
-               if rows_alpha:
+        if rows_alpha:
             df_neighbors_alpha = pd.DataFrame(rows_alpha)
 
             # --- IMAGES FIRST ---
