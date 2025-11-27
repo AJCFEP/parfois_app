@@ -336,6 +336,9 @@ else:
                         "CLR_DES": row_sel.get("CLR_DES"),
                     }
                 )
+
+
+                
             with col_img:
                 if paths_sel:
                     st.image(paths_sel[0], caption=f"{selected_pid}", width=220)
