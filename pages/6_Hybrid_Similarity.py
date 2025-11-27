@@ -471,7 +471,6 @@ else:
                 help="Hybrid similarity = α·Text + (1−α)·Image",
             )
 
-        # show image of the selected product next to the selector
         with col_center:
             paths_sel2 = image_map.get(selected_pid2, [])
             st.markdown("**Selected product image**")
@@ -487,6 +486,20 @@ else:
                 \\( S_{{hybrid}} = {alpha:.2f} \\cdot S_{{text}} + {1-alpha:.2f} \\cdot S_{{image}} \\)
                 """
             )
+
+        # Compact title right under the top row (small margins)
+        st.markdown(
+            """
+            <div style="
+                font-size:24px;
+                font-weight:600;
+                margin-top:0.6rem;
+                margin-bottom:0.3rem;">
+                Neighbours for the selected product with current α
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
         # --- Compute similarities for this product only ---
         idx_pid = hybrid_ids.index(selected_pid2)
@@ -524,13 +537,24 @@ else:
                     }
                 )
 
-        st.markdown("### Neighbours for the selected product with current α")
         if rows_alpha:
             df_neighbors_alpha = pd.DataFrame(rows_alpha)
             st.dataframe(df_neighbors_alpha)
 
-            # --- Visual grid of neighbour images ---
-            st.markdown("#### Visual view of neighbours (with current α)")
+            # Visual grid of neighbour images (also with tight top margin)
+            st.markdown(
+                """
+                <div style="
+                    font-size:18px;
+                    font-weight:500;
+                    margin-top:0.4rem;
+                    margin-bottom:0.2rem;">
+                    Visual view of neighbours (with current α)
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
             cols = st.columns(len(df_neighbors_alpha))
 
             for col, (_, row_n) in zip(cols, df_neighbors_alpha.iterrows()):
@@ -550,6 +574,7 @@ else:
                         st.info("No image available")
         else:
             st.info("No neighbours found for this configuration.")
+
 
 
 # -------------------------------------------------
