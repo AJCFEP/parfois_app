@@ -493,7 +493,7 @@ else:
             <div style="
                 font-size:24px;
                 font-weight:600;
-                margin-top:0.6rem;
+                margin-top:0.05rem;
                 margin-bottom:0.3rem;">
                 Neighbours for the selected product with current α
             </div>
@@ -546,7 +546,7 @@ else:
                 <div style="
                     font-size:18px;
                     font-weight:500;
-                    margin-top:0.1rem;   /* was 0.4rem */
+                    margin-top:0.05rem;   /* was 0.4rem */
                     margin-bottom:0.1rem;">
                     Visual view of neighbours (with current α)
                 </div>
