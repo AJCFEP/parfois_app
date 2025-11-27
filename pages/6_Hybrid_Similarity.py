@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -88,9 +89,57 @@ def build_image_map(images_root: str):
     return mapping
 
 
+@st.cache_data
+def load_embeddings_for_hybrid(sim_dir: str):
+    """
+    Load text & image embeddings + product IDs, and build aligned matrices
+    for products that have BOTH modalities.
+    Returns (T, I, common_ids) or (None, None, []) if something is missing.
+    """
+    text_emb_path = os.path.join(sim_dir, "text_embeddings.npy")
+    img_emb_path  = os.path.join(sim_dir, "clip_image_embeddings.npy")
+    text_ids_path = os.path.join(sim_dir, "product_ids_text.csv")
+    img_ids_path  = os.path.join(sim_dir, "product_ids_image.csv")
+
+    if not (
+        os.path.exists(text_emb_path)
+        and os.path.exists(img_emb_path)
+        and os.path.exists(text_ids_path)
+        and os.path.exists(img_ids_path)
+    ):
+        return None, None, []
+
+    try:
+        text_emb = np.load(text_emb_path)
+        img_emb  = np.load(img_emb_path)
+
+        text_ids = pd.read_csv(text_ids_path)["product_id"].astype(str).tolist()
+        img_ids  = pd.read_csv(img_ids_path)["product_id"].astype(str).tolist()
+
+        text_index = {pid: i for i, pid in enumerate(text_ids)}
+        img_index  = {pid: i for i, pid in enumerate(img_ids)}
+
+        common_ids = sorted(set(text_ids) & set(img_ids))
+        if not common_ids:
+            return None, None, []
+
+        T_list, I_list = [], []
+        for pid in common_ids:
+            T_list.append(text_emb[text_index[pid]])
+            I_list.append(img_emb[img_index[pid]])
+
+        T = np.vstack(T_list).astype("float32")
+        I = np.vstack(I_list).astype("float32")
+        return T, I, common_ids
+    except Exception:
+        # If anything goes wrong, just disable the interactive part gracefully
+        return None, None, []
+
+
 df_products = load_products()
 rec_dfs     = load_recs()
 image_map   = build_image_map(IMAGES_DIR)
+T_emb, I_emb, hybrid_ids = load_embeddings_for_hybrid(SIM_DIR)
 
 # -------------------------------------------------
 # Header: EXACTLY like app.py
@@ -212,8 +261,7 @@ if os.path.exists(hybrid_diag_path):
     st.image(
         hybrid_diag_path,
         caption="Hybrid similarity pipeline (text + image similarity combined).",
-        #use_column_width=True,
-        width=500
+        width=500,
     )
 else:
     st.info(
@@ -251,8 +299,8 @@ else:
     if not common_ids_sets:
         st.warning("Recommendation files are empty; cannot build comparison.")
     else:
-        common_ids = set.intersection(*common_ids_sets)
-        df_valid = df_local[df_local["product_id"].isin(common_ids)].copy()
+        common_ids_recs = set.intersection(*common_ids_sets)
+        df_valid = df_local[df_local["product_id"].isin(common_ids_recs)].copy()
 
         if df_valid.empty:
             st.warning("No common product_ids across text, image and hybrid recommendations.")
@@ -365,7 +413,114 @@ else:
                     st.dataframe(combined)
 
 # -------------------------------------------------
-# 4. References
+# 4. Experiment with the text–image weight α
+# -------------------------------------------------
+st.subheader("4. Experiment with the text–image weight α")
+
+if T_emb is None or I_emb is None or not hybrid_ids or df_products.empty:
+    st.info(
+        "Interactive weight tuning is not available. "
+        "Make sure 'text_embeddings.npy', 'clip_image_embeddings.npy', "
+        "'product_ids_text.csv' and 'product_ids_image.csv' exist in "
+        "the 'similarity_pipeline' folder."
+    )
+else:
+    df_alpha = df_products.copy()
+    if "product_id" not in df_alpha.columns:
+        if "PROD_CLR" in df_alpha.columns:
+            df_alpha["product_id"] = df_alpha["PROD_CLR"]
+        else:
+            st.error(
+                "df_product.csv has no 'product_id' or 'PROD_CLR' column. "
+                "Cannot align products with embeddings."
+            )
+            st.stop()
+
+    df_alpha = df_alpha[df_alpha["product_id"].isin(hybrid_ids)].copy()
+    if df_alpha.empty:
+        st.warning("No overlap between products and embedding product_ids.")
+    else:
+        def make_label2(row):
+            return (
+                f"{row['PROD_COD']} | {row['CLR_DES']} | "
+                f"{row['product_id']} | {str(row['PROD_DES'])[:50]}"
+            )
+
+        df_alpha["label"] = df_alpha.apply(make_label2, axis=1)
+        df_alpha = df_alpha.sort_values("label")
+        label_to_pid2 = dict(zip(df_alpha["label"], df_alpha["product_id"]))
+
+        col_left, col_right = st.columns([2, 3])
+
+        with col_left:
+            selected_label2 = st.selectbox(
+                "Select a product to tune α:",
+                options=list(label_to_pid2.keys()),
+            )
+            selected_pid2 = label_to_pid2[selected_label2]
+
+            alpha = st.slider(
+                "Weight for TEXT similarity α",
+                min_value=0.0,
+                max_value=1.0,
+                value=0.5,
+                step=0.05,
+                help="Hybrid similarity = α·Text + (1−α)·Image",
+            )
+
+        with col_right:
+            st.markdown(
+                f"""
+                **Current hybrid formula:**  
+                \\( S_{{hybrid}} = {alpha:.2f} \\cdot S_{{text}} + {1-alpha:.2f} \\cdot S_{{image}} \\)
+                """
+            )
+
+        # Compute similarities for this product only
+        idx_pid = hybrid_ids.index(selected_pid2)
+        t_vec = T_emb[idx_pid]          # (d_text,)
+        i_vec = I_emb[idx_pid]          # (d_img,)
+
+        s_text = t_vec @ T_emb.T        # (N,)
+        s_img  = i_vec @ I_emb.T        # (N,)
+        s_hyb  = alpha * s_text + (1 - alpha) * s_img
+
+        # Exclude self
+        s_text[idx_pid] = -1.0
+        s_img[idx_pid]  = -1.0
+        s_hyb[idx_pid]  = -1.0
+
+        # Top-k neighbours
+        K = 4
+        idx_sorted = np.argsort(-s_hyb)[:K]
+
+        rows_alpha = []
+        for j in idx_sorted:
+            pid_j = hybrid_ids[j]
+            r = df_alpha[df_alpha["product_id"] == pid_j]
+            if not r.empty:
+                r = r.iloc[0]
+                rows_alpha.append(
+                    {
+                        "neighbor_product_id": pid_j,
+                        "text_score": float(s_text[j]),
+                        "image_score": float(s_img[j]),
+                        "hybrid_score": float(s_hyb[j]),
+                        "PROD_COD": r.get("PROD_COD"),
+                        "PROD_DES": r.get("PROD_DES"),
+                        "CLR_DES": r.get("CLR_DES"),
+                    }
+                )
+
+        st.markdown("### Neighbours for the selected product with current α")
+        if rows_alpha:
+            df_neighbors_alpha = pd.DataFrame(rows_alpha)
+            st.dataframe(df_neighbors_alpha)
+        else:
+            st.info("No neighbours found for this configuration.")
+
+# -------------------------------------------------
+# 5. References
 # -------------------------------------------------
 st.subheader("References to go further on the subject")
 
